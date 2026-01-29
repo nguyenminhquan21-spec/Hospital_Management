@@ -1,20 +1,8 @@
 version: 1.0
 metadata:
-  template: nodejs-react-express
+  template: nodejs-app
 services:
-  server:
-    project: ./server
+  web:
+    project: .
     language: nodejs
     host: appservice
-    build:
-      builder: npm
-      buildCommand: npm install
-    run:
-      command: npm start
-  client:
-    project: ./client
-    language: nodejs
-    host: staticwebapp
-    build:
-      builder: npm
-      buildCommand: npm install && npm run build

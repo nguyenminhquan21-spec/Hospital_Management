@@ -1,2 +1,2 @@
 [config]
-command = cd ./server && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build
+command = cd server && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build
