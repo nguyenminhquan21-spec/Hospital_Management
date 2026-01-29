@@ -1,0 +1,2 @@
+[config]
+command = npm --prefix Hospital_Management_Website-main/server install && npm --prefix Hospital_Management_Website-main/client install && npm --prefix Hospital_Management_Website-main/client run build

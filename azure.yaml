@@ -1,0 +1,20 @@
+version: 1.0
+metadata:
+  template: nodejs-react-express
+services:
+  server:
+    project: ./Hospital_Management_Website-main/server
+    language: nodejs
+    host: appservice
+    build:
+      builder: npm
+      buildCommand: npm install
+    run:
+      command: npm start
+  client:
+    project: ./Hospital_Management_Website-main/client
+    language: nodejs
+    host: staticwebapp
+    build:
+      builder: npm
+      buildCommand: npm install && npm run build

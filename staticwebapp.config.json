@@ -1,0 +1,7 @@
+{
+  "staticWebApps": {
+    "app_location": "Hospital_Management_Website-main/client/build",
+    "api_location": "Hospital_Management_Website-main/server",
+    "output_location": "build"
+  }
+}
