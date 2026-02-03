@@ -25,15 +25,15 @@ function Footer() {
         <div className={styles.legalInfo}>
           <h2>Legal</h2>
           <ul>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Use</a></li>
-            <li><a href="#">Accessibility</a></li>
+            <li><a href="#privacy">Privacy Policy</a></li>
+            <li><a href="#terms">Terms of Use</a></li>
+            <li><a href="#accessibility">Accessibility</a></li>
           </ul>
         </div>
         <div className={styles.newsletter}>
           <h2> Newsletter<FaPaperPlane /> </h2>
           <p>Get the latest update and tips straight in your inbox</p>
-          <form action="#">
+          <form action="#subscribe">
             <input type='email' placeholder='Your email' required ></input>
             <button type='submit'>Subscribe</button>
           </form>
@@ -44,10 +44,10 @@ function Footer() {
 
       <div className={styles.copyright}>
         <div className={styles.socialIcons}>
-          <a href="#" aria-label="Facebook"><FaFacebook /></a>
-          <a href="#" aria-label="Twitter"><FaTwitter /></a>
-          <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
-          <a href="#" aria-label="Instagram"><FaInstagram /></a>
+          <a href="#facebook" aria-label="Facebook"><FaFacebook /></a>
+          <a href="#twitter" aria-label="Twitter"><FaTwitter /></a>
+          <a href="#linkedin" aria-label="LinkedIn"><FaLinkedin /></a>
+          <a href="#instagram" aria-label="Instagram"><FaInstagram /></a>
         </div>
         <p>&copy; {new Date().getFullYear()}MidCity Hospital. All rights reserved.</p>
       </div>

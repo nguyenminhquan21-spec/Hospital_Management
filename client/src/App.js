@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./components/styles.css";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -16,12 +16,12 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import MedicineListing from "./pages/Medicine"; // <-- import the medicine page
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  // const [darkMode, setDarkMode] = useState(false); // Not used
   const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
 
-  useEffect(() => {
-    document.body.classList.toggle("dark-mode", darkMode);
-  }, [darkMode]);
+  // useEffect(() => {
+  //   document.body.classList.toggle("dark-mode", darkMode);
+  // }, [darkMode]); // Not used
 
   const toggleEmergencyPanel = () => {
     setIsEmergencyOpen(!isEmergencyOpen);

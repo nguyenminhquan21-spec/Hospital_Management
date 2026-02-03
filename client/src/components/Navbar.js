@@ -13,8 +13,7 @@ import {
   FaPhone,
   FaMoon,
   FaSun,
-  FaQuestionCircle,
-  FaBell
+  FaQuestionCircle
 } from 'react-icons/fa';
 import { HiOutlineUser } from "react-icons/hi";
 
@@ -31,9 +30,9 @@ export default function Navbar() {
     setDarkMode((prev) => !prev);
   };
 
-  const toggleEmergencyPanel = () => {
-    setIsEmergencyOpen(!isEmergencyOpen);
-  };
+  // const toggleEmergencyPanel = () => {
+  //   setIsEmergencyOpen(!isEmergencyOpen);
+  // }; // Not used
 
   return (
     <header className="header_container nav-h">
