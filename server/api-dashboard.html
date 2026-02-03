@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management API Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .token-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .token-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .token-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+        }
+
+        .token-status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .token-valid {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .token-invalid {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .api-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .api-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .method-post { background: #ffc107; color: white; }
+        .method-get { background: #17a2b8; color: white; }
+        .method-put { background: #20c997; color: white; }
+        .method-delete { background: #dc3545; color: white; }
+
+        .endpoint {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 15px;
+            color: #333;
+            word-break: break-all;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .response-section {
+            margin-top: 20px;
+        }
+
+        .response-header {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 6px 6px 0 0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .response-status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .status-200 { background: #28a745; color: white; }
+        .status-201 { background: #28a745; color: white; }
+        .status-400 { background: #ffc107; color: black; }
+        .status-401 { background: #dc3545; color: white; }
+        .status-403 { background: #dc3545; color: white; }
+        .status-404 { background: #dc3545; color: white; }
+        .status-409 { background: #dc3545; color: white; }
+        .status-500 { background: #dc3545; color: white; }
+        .status-loading { background: #17a2b8; color: white; }
+
+        .response-body {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 0 0 6px 6px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .json-output {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #0c5460;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row,
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🏥 Hospital Management API</h1>
+            <p>Complete API Testing Dashboard</p>
+        </header>
+
+        <!-- Token Section -->
+        <div class="token-section">
+            <label>🔐 JWT Token (Auto-filled after login)</label>
+            <input type="text" id="authToken" class="token-input" placeholder="Paste token here...">
+            <div id="tokenStatus" class="token-status token-invalid">❌ No token</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('auth')">🔑 Authentication</button>
+            <button class="tab-button" onclick="switchTab('doctors')">👨‍⚕️ Doctors</button>
+            <button class="tab-button" onclick="switchTab('bookings')">📅 Bookings</button>
+        </div>
+
+        <!-- ============== AUTH TAB ============== -->
+        <div id="auth" class="tab-content active">
+            <!-- Register -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-post">POST</span>
+                    Register (Tạo tài khoản)
+                </h3>
+                <div class="endpoint">/api/auth/register</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👤 Full Name</label>
+                        <input type="text" id="reg_name" placeholder="e.g. Minh Quan">
+                    </div>
+                    <div class="form-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="reg_email" placeholder="e.g. test@example.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🔒 Password</label>
+                    <input type="password" id="reg_password" placeholder="e.g. Test@1234">
+                </div>
+
+                <button class="btn btn-primary" onclick="testRegister()">Register</button>
+
+                <div id="reg-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="reg-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="reg-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-post">POST</span>
+                    Login (Đăng nhập)
+                </h3>
+                <div class="endpoint">/api/auth/login</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📧 Email</label>
+                        <input type="email" id="login_email" placeholder="test@example.com" value="test@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>🔒 Password</label>
+                        <input type="password" id="login_password" placeholder="Test@1234" value="Test@1234">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="testLogin()">Login</button>
+
+                <div id="login-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="login-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="login-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============== DOCTORS TAB ============== -->
+        <div id="doctors" class="tab-content">
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-get">GET</span>
+                    Get All Doctors (Danh sách bác sĩ)
+                </h3>
+                <div class="endpoint">/api/doctors</div>
+
+                <button class="btn btn-primary" onclick="testGetDoctors()">Get Doctors</button>
+
+                <div id="doctors-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="doctors-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="doctors-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============== BOOKINGS TAB ============== -->
+        <div id="bookings" class="tab-content">
+            <div class="info-box">
+                ℹ️ <strong>Lưu ý:</strong> Cần token để thực hiện các thao tác booking. Hãy đăng nhập trước!
+            </div>
+
+            <!-- Create Booking -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-post">POST</span>
+                    Create Booking (Đặt lịch khám)
+                </h3>
+                <div class="endpoint">/api/bookings</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👤 Patient Name</label>
+                        <input type="text" id="book_name" placeholder="e.g. Nguyen Van A">
+                    </div>
+                    <div class="form-group">
+                        <label>📧 Patient Email</label>
+                        <input type="email" id="book_email" placeholder="e.g. patient@example.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📱 Patient Phone</label>
+                        <input type="tel" id="book_phone" placeholder="0912345678">
+                    </div>
+                    <div class="form-group">
+                        <label>👨‍⚕️ Doctor ID</label>
+                        <input type="text" id="book_doctor" placeholder="Paste doctor ID here">
+                        <small style="color: #666;">Get from "Get All Doctors" endpoint</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📅 Appointment Date</label>
+                        <input type="datetime-local" id="book_date">
+                    </div>
+                    <div class="form-group">
+                        <label>⏰ Time Slot</label>
+                        <select id="book_time">
+                            <option value="">Select time</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🩺 Reason for Checkup</label>
+                    <textarea id="book_reason" placeholder="e.g. General Checkup"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Notes (Optional)</label>
+                    <textarea id="book_notes" placeholder="e.g. First time patient"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="testCreateBooking()">Create Booking</button>
+
+                <div id="create-booking-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="create-booking-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="create-booking-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Get My Bookings -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-get">GET</span>
+                    Get My Bookings (Xem lịch khám của tôi)
+                </h3>
+                <div class="endpoint">/api/bookings</div>
+
+                <button class="btn btn-primary" onclick="testGetMyBookings()">Get My Bookings</button>
+
+                <div id="get-bookings-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="get-bookings-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="get-bookings-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Get Booking by ID -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-get">GET</span>
+                    Get Booking by ID
+                </h3>
+                <div class="endpoint">/api/bookings/:id</div>
+
+                <div class="form-group">
+                    <label>Booking ID</label>
+                    <input type="text" id="get_booking_id" placeholder="Paste booking ID here">
+                </div>
+
+                <button class="btn btn-primary" onclick="testGetBookingById()">Get Booking</button>
+
+                <div id="get-booking-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="get-booking-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="get-booking-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Booking -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-put">PUT</span>
+                    Update Booking (Cập nhật lịch)
+                </h3>
+                <div class="endpoint">/api/bookings/:id</div>
+                <div class="info-box">ℹ️ Chỉ có thể cập nhật: patientName, patientPhone, reason, notes</div>
+
+                <div class="form-group">
+                    <label>Booking ID</label>
+                    <input type="text" id="update_booking_id" placeholder="Paste booking ID here">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>👤 Patient Name (Optional)</label>
+                        <input type="text" id="update_name" placeholder="Leave empty if no change">
+                    </div>
+                    <div class="form-group">
+                        <label>📱 Patient Phone (Optional)</label>
+                        <input type="tel" id="update_phone" placeholder="Leave empty if no change">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🩺 Reason (Optional)</label>
+                    <textarea id="update_reason" placeholder="Leave empty if no change"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Notes (Optional)</label>
+                    <textarea id="update_notes" placeholder="Leave empty if no change"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="testUpdateBooking()">Update Booking</button>
+
+                <div id="update-booking-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="update-booking-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="update-booking-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel Booking -->
+            <div class="api-card">
+                <h3>
+                    <span class="method-badge method-delete">DELETE</span>
+                    Cancel Booking (Hủy lịch)
+                </h3>
+                <div class="endpoint">/api/bookings/:id</div>
+
+                <div class="form-group">
+                    <label>Booking ID</label>
+                    <input type="text" id="cancel_booking_id" placeholder="Paste booking ID here">
+                </div>
+
+                <button class="btn btn-primary" onclick="testCancelBooking()">Cancel Booking</button>
+
+                <div id="cancel-booking-response" class="response-section" style="display:none;">
+                    <div class="response-header">
+                        Response
+                        <span id="cancel-booking-status" class="response-status"></span>
+                    </div>
+                    <div class="response-body">
+                        <pre id="cancel-booking-result" class="json-output"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>✅ Hospital Management System | API v1.0 | Created with ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Token Management
+        document.getElementById('authToken').addEventListener('input', function() {
+            updateTokenStatus();
+        });
+
+        function updateTokenStatus() {
+            const token = document.getElementById('authToken').value;
+            const statusEl = document.getElementById('tokenStatus');
+            
+            if (token && token.length > 20) {
+                statusEl.className = 'token-status token-valid';
+                statusEl.textContent = '✅ Token valid (ready to use)';
+            } else {
+                statusEl.className = 'token-status token-invalid';
+                statusEl.textContent = '❌ No token (login first)';
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(c => c.classList.remove('active'));
+            
+            // Remove active class from buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Show Response
+        function showResponse(responseId, statusCode, data) {
+            const responseEl = document.getElementById(responseId);
+            const statusEl = document.getElementById(statusCode);
+            const resultEl = document.getElementById(responseId.replace('-response', '-result'));
+            
+            responseEl.style.display = 'block';
+            resultEl.textContent = JSON.stringify(data, null, 2);
+            
+            const statusClass = `status-${statusCode}`;
+            statusEl.className = `response-status ${statusClass}`;
+            statusEl.textContent = statusCode;
+        }
+
+        // ===== AUTH API CALLS =====
+        async function testRegister() {
+            const name = document.getElementById('reg_name').value;
+            const email = document.getElementById('reg_email').value;
+            const password = document.getElementById('reg_password').value;
+
+            if (!name || !email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+                showResponse('reg-response', response.status, data);
+
+                if (response.status === 200 && data.token) {
+                    document.getElementById('authToken').value = data.token;
+                    updateTokenStatus();
+                }
+            } catch (error) {
+                showResponse('reg-response', 'error', { error: error.message });
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('login_email').value;
+            const password = document.getElementById('login_password').value;
+
+            if (!email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                showResponse('login-response', response.status, data);
+
+                if (response.status === 200 && data.token) {
+                    document.getElementById('authToken').value = data.token;
+                    updateTokenStatus();
+                }
+            } catch (error) {
+                showResponse('login-response', 'error', { error: error.message });
+            }
+        }
+
+        // ===== DOCTORS API CALLS =====
+        async function testGetDoctors() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/doctors`);
+                const data = await response.json();
+                showResponse('doctors-response', response.status, data);
+            } catch (error) {
+                showResponse('doctors-response', 'error', { error: error.message });
+            }
+        }
+
+        // ===== BOOKINGS API CALLS =====
+        function getToken() {
+            const token = document.getElementById('authToken').value;
+            if (!token) {
+                alert('❌ No token! Please login first.');
+                return null;
+            }
+            return token;
+        }
+
+        async function testCreateBooking() {
+            const token = getToken();
+            if (!token) return;
+
+            const data = {
+                patientName: document.getElementById('book_name').value,
+                patientEmail: document.getElementById('book_email').value,
+                patientPhone: document.getElementById('book_phone').value,
+                doctorId: document.getElementById('book_doctor').value,
+                appointmentDate: new Date(document.getElementById('book_date').value).toISOString(),
+                timeSlot: document.getElementById('book_time').value,
+                reason: document.getElementById('book_reason').value,
+                notes: document.getElementById('book_notes').value
+            };
+
+            if (!data.patientName || !data.patientEmail || !data.patientPhone || !data.doctorId || !data.appointmentDate || !data.timeSlot || !data.reason) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                showResponse('create-booking-response', response.status, result);
+            } catch (error) {
+                showResponse('create-booking-response', 'error', { error: error.message });
+            }
+        }
+
+        async function testGetMyBookings() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                showResponse('get-bookings-response', response.status, data);
+            } catch (error) {
+                showResponse('get-bookings-response', 'error', { error: error.message });
+            }
+        }
+
+        async function testGetBookingById() {
+            const token = getToken();
+            if (!token) return;
+
+            const bookingId = document.getElementById('get_booking_id').value;
+            if (!bookingId) {
+                alert('Please enter booking ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                showResponse('get-booking-response', response.status, data);
+            } catch (error) {
+                showResponse('get-booking-response', 'error', { error: error.message });
+            }
+        }
+
+        async function testUpdateBooking() {
+            const token = getToken();
+            if (!token) return;
+
+            const bookingId = document.getElementById('update_booking_id').value;
+            if (!bookingId) {
+                alert('Please enter booking ID');
+                return;
+            }
+
+            const data = {};
+            if (document.getElementById('update_name').value) data.patientName = document.getElementById('update_name').value;
+            if (document.getElementById('update_phone').value) data.patientPhone = document.getElementById('update_phone').value;
+            if (document.getElementById('update_reason').value) data.reason = document.getElementById('update_reason').value;
+            if (document.getElementById('update_notes').value) data.notes = document.getElementById('update_notes').value;
+
+            if (Object.keys(data).length === 0) {
+                alert('Please fill at least one field to update');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                showResponse('update-booking-response', response.status, result);
+            } catch (error) {
+                showResponse('update-booking-response', 'error', { error: error.message });
+            }
+        }
+
+        async function testCancelBooking() {
+            const token = getToken();
+            if (!token) return;
+
+            const bookingId = document.getElementById('cancel_booking_id').value;
+            if (!bookingId) {
+                alert('Please enter booking ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                showResponse('cancel-booking-response', response.status, data);
+            } catch (error) {
+                showResponse('cancel-booking-response', 'error', { error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>
