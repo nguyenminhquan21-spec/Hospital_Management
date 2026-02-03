@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "start": "cd server && npm start",
-    "install-all": "cd client && npm install --legacy-peer-deps && cd ../server && npm install --legacy-peer-deps && cd ..",
-    "build": "cd client && npm install --legacy-peer-deps && npm run build"
+    "build": "cd client && npm install --legacy-peer-deps && npm run build && cd ../server && npm install --legacy-peer-deps"
   }
 }
