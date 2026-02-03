@@ -80,11 +80,6 @@ app.use("/api", doctorRoutes);
 
 // Doctors route moved to routes/doctorRoutes.js (public)
 
-// Serve React app for all non-API routes (catch-all, must be last)
-app.use((req, res, next) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
-
 // Lab booking
 app.post("/api/labs/book", async (req, res) => {
   try {
@@ -142,6 +137,11 @@ app.post("/api/surgery/book", upload.single("prescription"), async (req, res) =>
     console.error("Error booking surgery:", err);
     res.status(500).json({ error: "Server error" });
   }
+});
+
+// Serve React app for all non-API routes (catch-all, MUST be last)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
 // Start server
