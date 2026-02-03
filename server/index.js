@@ -31,6 +31,8 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Only enable CORS for specific non-frontend requests if needed
+// Since we're now serving frontend from backend, CORS is optional
 app.use(cors());
 app.use(express.json());
 
@@ -43,24 +45,30 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.send("Backend is running successfully!");
-});
+// Root route removed - serving index.html from build folder instead
 
 // MongoDB connection
 const mongoURI = process.env.MONGO_URI;
-console.log("Connecting to MongoDB URI:", mongoURI);
 
-mongoose
-  .connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error(" MongoDB Error:", err));
+if (mongoURI) {
+  console.log("📶 Connecting to MongoDB...");
+  mongoose
+    .connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => console.log("✅ MongoDB Connected"))
+    .catch((err) => console.error("❌ MongoDB Error:", err));
+} else {
+  console.warn("⚠️  MONGO_URI not set - skipping database connection");
+  console.warn("⚠️  Please set MONGO_URI in .env file or environment variables");
+}
 
 // Static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Serve static files from client build (CSS, JS, images, etc.)
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -71,6 +79,11 @@ app.use("/api", isAuthenticated, doctorViewerOnly, emergencyRoutes);
 app.use("/api", doctorRoutes);
 
 // Doctors route moved to routes/doctorRoutes.js (public)
+
+// Serve React app for all non-API routes (catch-all, must be last)
+app.use((req, res, next) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
 
 // Lab booking
 app.post("/api/labs/book", async (req, res) => {
